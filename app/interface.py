@@ -6,7 +6,7 @@ to the user.
 """
 
 # 3rd party module imports
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 def create_app() -> Flask:
     """
@@ -17,17 +17,42 @@ def create_app() -> Flask:
         Flask app object
     """
     app = Flask(__name__)
- 
+    goals = {"yoga":" minutes",
+             "push ups":" reps",
+             "pull ups":" reps",
+             "cycling":" km"}
+
     @app.route("/")
     def home():
-        return render_template("index.html")
+        """
+        Render the default home page.
+        """
+        return render_template("index.html", goals=list(goals.keys()))
 
-    @app.route("/options")
-    def options():
-        # These are options to be populated by database
+    @app.route("/process", methods=["POST"])
+    def process():
+        """
+        Take user input and render the results.
+        """
+        goal = request.form.get("goal", "")
+        number_raw = request.form.get("number", "")
 
-        items = ["Apple", "Banana", "Pineapple"]
-        return "".join(f"<option value='{i}'>{i}</option>" for i in items)
+        if goal not in goals.keys():
+            return render_template(
+                "result.html",
+                message="Invalid Fruit Selected"
+            )
+
+        try:
+            number = int(number_raw)
+        except ValueError:
+            return render_template(
+                "result.html",
+                message="Please enter a number."
+            )
+
+        message = f"You have completed {number}{goals[goal]} of {goal}."
+        return render_template("result.html", message=message)
 
     return app
 
