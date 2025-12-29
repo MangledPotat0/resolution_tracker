@@ -37,10 +37,10 @@ def create_app() -> Flask:
         goal = request.form.get("goal", "")
         number_raw = request.form.get("number", "")
 
-        if goal not in goals.keys():
+        if goal not in goals:
             return render_template(
                 "result.html",
-                message="Invalid Fruit Selected"
+                message="Invalid Goal Selected"
             )
 
         try:
