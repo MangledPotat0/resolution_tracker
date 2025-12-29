@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hello World</title>
+	<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+	<h1>Hello World!</h1>
+	<label for="fruit">Choose a fruit:</label>
+	<select id="fruit"
+		hx-get="/options"
+		hx-trigger="load"
+		hx-target="#fruit">
+	</select>
+</body>
+</html>
