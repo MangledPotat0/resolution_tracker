@@ -5,11 +5,15 @@ tests/test_interface.py
 
 import pytest
 from app.interface import create_app
+from unittest.mock import patch, MagicMock
 
 @pytest.fixture
 def client():
-    app = create_app()
-    return app.test_client()
+    fake_conn = MagicMock()
+    with patch("app.interface.db_connect", return_value=fake_conn):
+        app = create_app()
+        app.config["TESTING"] = True
+        return app.test_client()
 
 def test_home_render(client):
     response = client.get("/")
@@ -37,3 +41,12 @@ def test_valid_submission(client):
                                  "number": "10"})
     assert response.status_code == 200
     assert b"You have completed 10 minutes of yoga." in response.data
+
+def test_db_connected():
+    fake_conn = MagicMock()
+    with patch("app.interface.db_connect", return_value=fake_conn):
+        app = create_app()
+        assert hasattr(app, "db")
+        assert app.db is fake_conn
+
+# EOF
