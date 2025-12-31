@@ -4,9 +4,11 @@ interface.py
 This module controls and provides the rendering of the web app that is served
 to the user.
 """
-
 # 3rd party module imports
 from flask import Flask, render_template, request
+
+# local module imports
+from app.db.connection import db_connect, db_close
 
 def create_app() -> Flask:
     """
@@ -17,6 +19,7 @@ def create_app() -> Flask:
         Flask app object
     """
     app = Flask(__name__)
+    app.db = db_connect()
     goals = {"yoga":" minutes",
              "push ups":" reps",
              "pull ups":" reps",
