@@ -19,7 +19,12 @@ def create_app() -> Flask:
         Flask app object
     """
     app = Flask(__name__)
-    app.db = db_connect()
+    try:
+        app.db = db_connect()
+    except Exception as e:
+        raise RuntimeError("Database connection failed") from e
+    print("Connection opened for postgreSQL database")
+
     goals = {"yoga":" minutes",
              "push ups":" reps",
              "pull ups":" reps",
