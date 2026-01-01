@@ -9,6 +9,7 @@ from flask import Flask, render_template, request
 
 # local module imports
 from app.db.connection import db_connect, db_close
+from app.db.schema import initialize_schema
 
 def create_app() -> Flask:
     """
@@ -21,6 +22,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
     try:
         app.db = db_connect()
+        initialize_schema(app.db)
     except Exception as e:
         raise RuntimeError("Database connection failed") from e
     print("Connection opened for postgreSQL database")
