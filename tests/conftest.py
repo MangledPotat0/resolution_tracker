@@ -30,12 +30,19 @@ def conn():
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT")
     )
-    yield connection
-    connection.close()
+    yield conn
+    conn.close()
 
 @pytest.fixture(autouse=True)
-def test_db():
+def test_db(conn):
     with conn.cursor() as cur:
-        curr.execute("TRUNCATE activity_logs RESTART IDENTITY CASCADE;")
-        curr.execute("TRUNCATE activity_types RESTART IDENTITY CASCADE;")
-    conn.commit()
+        try:
+            cur.execute("TRUNCATE activity_logs RESTART IDENTITY CASCADE;")
+            cur.execute("TRUNCATE activity_types RESTART IDENTITY CASCADE;")
+        except psycopg2.errors.UndefinedTable:
+            # Tables don't exist
+            conn.rollback()
+        else:
+            conn.commit()
+
+# EOF
