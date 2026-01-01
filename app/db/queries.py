@@ -61,7 +61,7 @@ def get_activity_type(conn: connection, activity_type_id: str) \
     Fetches an activity type record from the database by activity_type_id.
 
     Args:
-        conn (Connection): Handle for psql database connection.
+        conn (connection): Handle for psql database connection.
         activity_type_id (int): Unique identifier for activity_type of
             interest.
 
@@ -75,16 +75,59 @@ def get_activity_type(conn: connection, activity_type_id: str) \
         return row
 
 def insert_activity_type(conn: connection, name: str, canonical_unit: str,
-        goal_quantity: int) -> None:
-    pass
+        goal_quantity: int=None) -> None:
+    """
+    Insert a new activity type record to the database.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+        name (str): Name of the new activity type.
+        canonical_unit (str): The unit of measure for the activity.
+        goal_quantity (int): The goal for activity. Value is optional, if None
+            then goal_quantity field of database is null.
+    """
+
+    with conn.cursor() as cur:
+        cur.execute(
+            INSERT_ACTIVITY_TYPE,
+            (name, canonical_unit, goal_quantity,)
+        )
+    conn.commit()
 
 def update_activity_type(conn: connection, activity_type_id: int,
         name: str=None, canonical_unit: str=None, goal_quantity:int = None) \
                 -> None:
-    pass
+    """
+    Updates an existing activity_type record with new attribute values.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+        activity_type_id (int): The id of the activity_type record that needs
+            to be updated.
+        name (str): New name given to the activity type.
+        canonical_unit (str): New unit of measure for the activity type.
+        goal_quantity (int): New goal for activity type. Value is optional, if
+            None, then goal_quantity field of database is null.
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            UPDATE_ACTIVITY_TYPE,
+            (name, canonical_unit, goal_quantity, activity_type_id,)
+        )
+    conn.commit()
 
 def delete_activity_type(conn: connection, activity_type_id: int) -> None:
-    pass
+    """
+    Deletes an existing activity_type record.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+        activity_type_id (int): The id of the activity_type record to delete.
+    """
+    
+    with conn.cursor() as cur:
+        cur.execute(DELETE_ACTIVITY_TYPE, (activity_type_id,))
+    conn.commit()
 
 ## activity logs
 def get_activity_log(conn: connection, log_id: str) \
@@ -93,7 +136,7 @@ def get_activity_log(conn: connection, log_id: str) \
     Fetches an activity log record from the database by log_id.
 
     Args:
-        conn (Connection): Handle for psql database connection.
+        conn (connection): Handle for psql database connection.
         log_id (int): Unique identifier for a record of interest in
             activity_logs table.
 
@@ -106,4 +149,54 @@ def get_activity_log(conn: connection, log_id: str) \
         row = cur.fetchone()
         return row
 
+def insert_activity_log(conn: connection, activity_type_id: int,
+        quantity: int=None) -> None:
+    """
+    Insert a new activity type record to the database.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+        activity_type_id (int): The id of the activity being logged.
+        quantity (int): The amount of activity performed, measured in the
+            canonical unit of the activity.
+    """
+
+    with conn.cursor() as cur:
+        cur.execute(
+            INSERT_ACTIVITY_LOG,
+            (activity_type_id, quantity,)
+        )
+    conn.commit()
+
+def update_activity_log(conn: connection, log_id: int, activity_type_id: int,
+        quantity:int) -> None:
+    """
+    Updates an existing activity_log record with new attribute values.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+        log_id (int): The id of the activity_log that needs to be updated.
+        activity_type_id (int): The id of the activity_type for the activity
+            being logged.
+        quantity (int): The new quantity of activity being logged.
+    """
+    with conn.cursor() as cur:
+        cur.execute(
+            UPDATE_ACTIVITY_LOG,
+            (activity_type_id, quantity, log_id,)
+        )
+    conn.commit()
+
+def delete_activity_log(conn: connection, log_id: int) -> None:
+    """
+    Deletes an existing activity_log record.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+        log_id (int): The id of the activity_log record to delete.
+    """
+    
+    with conn.cursor() as cur:
+        cur.execute(DELETE_ACTIVITY_LOG, (log_id,))
+    conn.commit()
 # EOF
