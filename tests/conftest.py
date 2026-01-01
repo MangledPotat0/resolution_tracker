@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # tests/confttest.py
 
+import os
 import pytest
 import psycopg2
 
