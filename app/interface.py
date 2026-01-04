@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-interface.py
+app/interface.py
 This module controls and provides the rendering of the web app that is served
 to the user.
 """
@@ -10,6 +10,8 @@ from flask import Flask, render_template, request
 # local module imports
 from app.db.connection import db_connect, db_close
 from app.db.schema import initialize_schema
+from app.routes.units import units_bp
+from app.routes.unit_groups import unit_groups_bp
 
 def create_app() -> Flask:
     """
@@ -20,6 +22,8 @@ def create_app() -> Flask:
         Flask app object
     """
     app = Flask(__name__)
+    app.register_blueprint(units_bp, url_prefix="/units")
+    app.register_blueprint(unit_groups_bp, url_prefix="/unit_groups")
     try:
         app.db = db_connect()
         initialize_schema(app.db)
@@ -38,6 +42,22 @@ def create_app() -> Flask:
         Render the default home page.
         """
         return render_template("index.html", goals=list(goals.keys()))
+
+    @app.route("/menu")
+    def table_menu():
+        table = request.args.get("table")
+        print(table)
+        match table:
+            case "units":
+                return render_template("/menu/units_menu.html")
+            case "unit_groups":
+                return render_template("/menu/unit_groups_menu.html")
+            case "activity_types":
+                return render_template("/menu/activity_types_menu.html")
+            case "activity_logs":
+                return render_template("/menu/activity_logs_menu.html")
+            case _:
+                return "Invalid table selection", 400
 
     @app.route("/process", methods=["POST"])
     def process():
