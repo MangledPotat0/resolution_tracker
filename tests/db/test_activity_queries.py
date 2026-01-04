@@ -3,7 +3,7 @@
 
 import pytest
 
-from app.db import queries
+from app.db import activity_queries
 
 def test_insert_andd_Get_activity_type(db_conn):
     queries.insert_activity_type(db_conn, "yoga", "minutes", 30)
