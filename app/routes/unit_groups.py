@@ -120,6 +120,11 @@ def update_unit_submit():
 
 @unit_groups_bp.route("/delete/submit", methods=["POST"])
 def delete_unit_submit():
-    pass
+    conn = current_app.db
+    group_id = request.form.get("id")
+    group_name = request.form.get("name")
+    delete_unit_group(conn, group_id)
+
+    return render_template("unit_groups/delete_result.html", name=group_name)
 
 # EOF

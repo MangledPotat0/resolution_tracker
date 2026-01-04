@@ -9,8 +9,8 @@
   <li>Canonical Unit: {{ group.canonical_unit_name }}</li>
 </ul>
 
-<form method="POST" action="/unit_groups/delete_submit">
-  <input type="hidden" name="group_id" value="{{ group.id }}">
+<form method="POST" action="/unit_groups/delete/submit">
+  <input type="hidden" name="id" value="{{ group.id }}">
   <input type="hidden" name="name" value="{{ group.name }}">
   <button type="submit" style="background-color: red; color= white;">
     Delete
