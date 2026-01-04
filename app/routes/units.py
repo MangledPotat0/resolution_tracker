@@ -1,0 +1,64 @@
+# -*- coding: utf-8 -*-
+"""
+app/router/units.py
+
+Defines the routes for workflow related to units table.
+"""
+
+# 3rd party module imports
+from flask import Blueprint, current_app, render_template, request, redirect, \
+                  url_for
+
+# local module imports
+from app.db.unit_queries import get_all_unit_groups, insert_unit
+
+units_bp = Blueprint("units", __name__)
+
+@units_bp.route("/action")
+def units_action_router():
+    action = request.args.get("action")
+    match action:
+        case "create":
+            return redirect(url_for("units.create_unit"))
+        case "":
+            return redirect(url_for("units.view_unit"))
+        case "":
+            return redirect(url_for("units.update_unit"))
+        case "":
+            return redirect(url_for("units.delete_unit"))
+        case _:
+            return "Invalid action", 400
+
+@units_bp.route("/create", methods=["GET", "POST"])
+def create_unit():
+    conn = current_app.db
+    if request.method == "POST":
+        name = request.form.get("name")
+        group_id = request.form.get("group_id")
+        factor = request.form.get("factor")
+        shift = request.form.get("shift")
+
+        try:
+            factor = float(factor)
+            shift = float(shift)
+        except ValueError:
+            return "Factor and shift must be numbers."
+
+        try:
+            new_id = insert_unit(conn, name, group_id, factor, shift)
+        except Exception as e:
+            return f"Error creating unit: {e}"
+        
+        return render_template(
+            "units/create_result.html",
+            unit_id=new_id,
+            name=name,
+            group_id=group_id,
+            factor=factor,
+            shift=shift
+        )
+
+    groups = get_all_unit_groups(conn)
+    return render_template("units/create.html", groups=groups)
+
+# EOF
