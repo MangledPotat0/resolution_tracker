@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-app/db/queries.py
+app/db/activity_queries.py
 
-All the psql queries for database transactions.
+All the psql queries for database transactions related to activities.
 """
 
 # Built-in module imports
@@ -26,8 +26,8 @@ JOIN unit_groups ug ON type.unit_group_id = ug.id
 WHERE type.id = %s;
 """
 INSERT_ACTIVITY_TYPE = """
-    INSERT INTO activity_types (name, unit_group_id, goal_quantity)
-    VALUES (%s, %s, %s) RETURNING id;
+INSERT INTO activity_types (name, unit_group_id, goal_quantity)
+VALUES (%s, %s, %s) RETURNING id;
 """
 UPDATE_ACTIVITY_TYPE = """
 UPDATE activity_types
