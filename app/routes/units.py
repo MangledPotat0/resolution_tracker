@@ -10,7 +10,7 @@ from flask import Blueprint, current_app, render_template, request, redirect, \
                   url_for
 
 # local module imports
-from app.db.unit_queries import get_all_unit_groups, insert_unit
+from app.db.unit_queries import get_all_units, get_all_unit_groups, insert_unit
 
 units_bp = Blueprint("units", __name__)
 
@@ -20,8 +20,8 @@ def units_action_router():
     match action:
         case "create":
             return redirect(url_for("units.create_unit"))
-        case "":
-            return redirect(url_for("units.view_unit"))
+        case "view":
+            return redirect(url_for("units.view_units"))
         case "":
             return redirect(url_for("units.update_unit"))
         case "":
@@ -60,5 +60,11 @@ def create_unit():
 
     groups = get_all_unit_groups(conn)
     return render_template("units/create.html", groups=groups)
+
+@units_bp.route("/view", methods=["GET"])
+def view_units():
+    conn = current_app.db
+    units = get_all_units(conn)
+    return render_template("units/view.html", units=units)
 
 # EOF
