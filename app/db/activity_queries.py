@@ -25,6 +25,10 @@ FROM activity_types type
 JOIN unit_groups ug ON type.unit_group_id = ug.id
 WHERE type.id = %s;
 """
+GET_ALL_ACTIVITY_TYPES = """
+SELECT id, name
+FROM activity types;
+"""
 INSERT_ACTIVITY_TYPE = """
 INSERT INTO activity_types (name, unit_group_id, goal_quantity)
 VALUES (%s, %s, %s) RETURNING id;
@@ -241,6 +245,22 @@ def delete_activity_log(conn: connection, log_id: int) -> None:
     with conn.cursor() as cur:
         cur.execute(DELETE_ACTIVITY_LOG, (log_id,))
     conn.commit()
+
+def get_all_activity_types(conn: connection) -> List[Dict[str, Any]]:
+    """
+    Fetches all the activity types saved on activity_types table.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+
+    Returns:
+        List[Dict[str, Any]]: List of RealDictCursor dict objects containing
+            the records of activity_types table.
+    """
+
+    with conn.cursor() as cur:
+        cur.execute(GET_ALL_ACTIVITY_TYPES)
+        return cur.fetchall()
 
 def get_activity_logs_for_type(conn: connection, display_unit_id: int,
         activity_type_id: int) -> List[Dict[str, Any]]:
