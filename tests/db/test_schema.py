@@ -17,6 +17,7 @@ TEST_PORT = "5432"
 
 print("REACHED FIXTURE DESTINATION")
 
+"""
 @pytest.fixture(scope="module", autouse=True)
 def set_test_db_env():
     os.environ["DB_NAME"] = TEST_DB_NAME
@@ -24,8 +25,9 @@ def set_test_db_env():
     os.environ["DB_PASSWORD"] = TEST_PASSWORD
     os.environ["DB_HOST"] = TEST_HOST
     os.environ["DB_PORT"] = TEST_PORT
+"""
 
-def create_test_database():
+def create_test_database(conn):
     conn = psycopg2.connect(
         dbname="postgres",
         user=os.getenv("DB_USER"),
@@ -42,7 +44,7 @@ def create_test_database():
     cur.close()
     conn.close()
 
-def drop_test_database():
+def drop_test_database(conn):
     conn = psycopg2.connect(
         dbname="postgres",
         user=os.getenv("DB_USER"),
@@ -58,6 +60,7 @@ def drop_test_database():
     cur.close()
     conn.close()
 
+"""
 def connect_test_db():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME"),
@@ -66,18 +69,16 @@ def connect_test_db():
         host=os.getenv("DB_HOST"),
         port=os.getenv("DB_PORT")
     )
+"""
 
 @pytest.fixture(scope="module")
-def test_db():
-    create_test_database()
+def test_db(conn):
+    create_test_database(conn)
     yield
-    drop_test_database()
+    drop_test_database(conn)
 
-def test_schema_initialization_create_tables(test_db):
-    conn = connect_test_db()
+def test_schema_initialization_create_tables(test_db, conn):
     initialize_schema(conn)
 
     assert table_exists(conn, "activity_types")
     assert table_exists(conn, "activity_logs")
-
-    conn.close()
