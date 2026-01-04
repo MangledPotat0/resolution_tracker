@@ -4,4 +4,4 @@ docker run --rm -it -v ${PWD}:/app/workdir `
 	   --env-file .env `
 	   --network=pg-network `
 	   --name flask `
-	   python-work
+	   resolutionpy /bin/bash
