@@ -1,32 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>New Years Resolution Tracker</title>
-	<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <title>New Years Resolution Tracker</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
-	<h1>Welcome to my New Years Resolution Tracker!</h1>
-	<form hx-post="/process"
-	      hx-target="#result"
-	      hx-swap="innerHTML">
-		<label for="fruit">Choose a goal:</label>
-		<select name="goal">
-			{% for f in goals %}
-			<option value="{{ f }}">{{ f }}</option>
-			{% endfor %}
-		</select>
-
-		<br><br>
-
-		<label for ="number">Enter a number:</label>
-		<input type="number" name="number" id="number" required>
-
-		<br><br>
-
-		<button type="submit">Submit</button>
-	</form>
-
-	<div id="result"></div>
-
+  <h1>Welcome to my New Years Resolution Tracker!</h1>
+  <h2>Select a table to manage</h2>
+  <form method="GET" action="/menu">
+    <select name="table">
+      <option value"units">Units</option>
+      <option value="unit_groups">Unit Groups</option>
+      <option value="activity_types">Activity Types</option>
+      <option value="activity_logs">Activity Logs</option>
+    </select>
+    <button type="submit">Submit</button>
+  </form>
 </body>
 </html>
