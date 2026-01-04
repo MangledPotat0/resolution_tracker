@@ -41,12 +41,12 @@ WHERE id = %s;
 
 # SQL strings for units table
 GET_UNIT = """
-SELECT id, name, group_id, factor, offset, is_canonical
+SELECT id, name, group_id, factor, shift, is_canonical
 FROM units
 WHERE id = %s;
 """
 INSERT_UNIT = """
-INSERT INTO units (name, group_id, factor, offset)
+INSERT INTO units (name, group_id, factor, shift)
 VALUES (%s, %s, %s, %s)
 RETURNING id;
 """
@@ -56,7 +56,7 @@ SET
     name = %s,
     group_id = %s,
     factor = %s,
-    offset = %s
+    shift = %s
 WHERE id = %s;
 """
 DELETE_UNIT = """
@@ -163,7 +163,7 @@ def get_unit(conn: connection, unit_id: int) -> Optional[Dict[str, Any]]:
         return cur.fetchone()
 
 def insert_unit(conn: connection, name: str, group_id: int,
-        factor: float, offset: float) -> int:
+        factor: float, shift: float) -> int:
     """
     Inserts a unit into the units table.
 
@@ -173,7 +173,7 @@ def insert_unit(conn: connection, name: str, group_id: int,
         group_id (int): ID of unit group that the new unit belongs to.
         factor (float): Multiplicative factor when converting to the canonical
             unit.
-        offset (float): Additive offset when converting to the canonical unit.
+        shift (float): Additive shift when converting to the canonical unit.
 
     Returns:
         int: id assigned to the newly created unit record.
@@ -181,14 +181,14 @@ def insert_unit(conn: connection, name: str, group_id: int,
     with conn.cursor() as cur:
         cur.execute(
             INSERT_UNIT,
-            (name, group_id, factor, offset,)
+            (name, group_id, factor, shift,)
         )
         unit_id = cur.fetchone()["id"]
     conn.commit()
     return unit_id
 
 def update_unit(conn: connection, unit_id: int, name: str, group_id: int,
-        factor: float, offset: float) -> None:
+        factor: float, shift: float) -> None:
     """
     Updates a unit in the units table.
 
@@ -199,13 +199,13 @@ def update_unit(conn: connection, unit_id: int, name: str, group_id: int,
         group_id (int): New ID of unit group that the new unit belongs to.
         factor (float): New multiplicative factor when converting to the
             canonical unit.
-        offset (float): New additive offset when converting to the canonical
+        shift (float): New additive shift when converting to the canonical
             unit.
     """
     with conn.cursor() as cur:
         cur.execute(
             UPDATE_UNIT,
-            (name, group_id, factor, offset, unit_id,)
+            (name, group_id, factor, shift, unit_id,)
         )
     conn.commit()
 
