@@ -1,0 +1,9 @@
+<h2>Unit Deleted</h2>
+
+{% if error %}
+  <p style:"color: red;">{{ error }}</p>
+  <a href="/units/delete_unit">Return</a>
+{% else %}
+  <p>The unit <strong>{{ name }}</strong> has been deleted.</p>
+  <a href="/menu?table=units">Back to Units Menu</a>
+{% endif %}

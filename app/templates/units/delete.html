@@ -1,9 +1,22 @@
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
 <h2>Delete Unit</h2>
 
-<form method="POST">
-  <label>Unit ID:</label>
-  <input type="number" name="unit_id" required>
-  <button type="submit">Delete</button>
-</form>
+<label>Select Unit Group:</label>
+<select
+  name="group_id"
+  hx-get="/units/delete/get_units"
+  hx-target="#unit-dropdown"
+  hx-trigger="change"
+>
+  <option value="">-- Select Group --</option>
+  {% for g in groups %}
+    <option value="{{ g.id }}">{{ g.name }}</option>
+  {% endfor %}
+</select>
+
+<div id="unit-dropdown"></div>
+
+<div id="unit-delete-form"></div>
 
 <a href="/menu?table=units">Back to Units Menu</a>

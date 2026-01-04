@@ -1,0 +1,19 @@
+<h3>Confirm Delete</h3>
+
+<p>Are you sure you want to delete this unit?</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr><th>ID</th><td>{{ unit.id }}</td></tr>
+  <tr><th>Name</th><td>{{ unit.name }}</td></tr>
+  <tr><th>Group ID</th><td>{{ unit.group_id }}</td></tr>
+  <tr><th>Factor</th><td>{{ unit.factor }}</td></tr>
+  <tr><th>Shift</th><td>{{ unit.shift }}</td></tr>
+  <tr><th>Canonical Unit</th><td>{{ unit.is_canonical }}</td></tr>
+</table>
+
+<form method="POST" action="/units/delete">
+  <input type="hidden" name="unit_id" value="{{ unit.id }}">
+  <input type="hidden" name="name" value="{{ unit.name }}">
+  <input type="hidden" name="is_canonical" value="{{ unit.is_canonical }}">
+  <button type="submit" style="background: red; color: white;">Delete</button>
+</form>

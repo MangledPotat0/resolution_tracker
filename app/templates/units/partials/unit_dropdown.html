@@ -1,8 +1,8 @@
 <label>Select Unit:</label>
 <select
   name="unit_id"
-  hx-get="/units/update/get_unit_form"
-  hx-target="#unit-form"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
   hx-trigger="change"
 >
   <option value="">-- Select Unit --</option>
