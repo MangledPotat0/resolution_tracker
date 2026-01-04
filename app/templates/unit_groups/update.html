@@ -1,0 +1,15 @@
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+<h2>Update Unit Group</h2>
+
+<div
+  id="unit-group-dropdown"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
+  hx-trigger="load"
+>
+</div>
+
+<div id="unit-group-update-form"></div>
+
+<a href="/menu?table=unit_groups">Back to Unit Groups Menu</a>

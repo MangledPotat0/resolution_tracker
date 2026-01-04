@@ -1,0 +1,27 @@
+<h3>Update Unit Group</h3>
+
+{% if group %}
+<form method="POST" action="/unit_groups/update/submit">
+  <input type="hidden" name="id" value="{{ group.id }}">
+
+  <label for="name">Group Name:</label>
+  <input
+    id="name"
+    type="text"
+    name="name"
+    value="{{ group.name }}"
+    required
+  >
+
+  <input
+    type="hidden"
+    name="canonical_unit_name"
+    value="{{ group.canonical_unit_name }}"
+  >
+
+   <button type="submit">Update</button>
+</form>
+
+{% else %}
+<p style="color: red;">Invalid group selected.</p>
+{% endif %}

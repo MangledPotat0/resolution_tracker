@@ -1,0 +1,13 @@
+<label>Select Unit Group:</label>
+<select
+  id="unit-group-select"
+  name="id"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
+  hx-trigger="change"
+>
+  <option value="">-- Select Unit Group --</option>
+  {% for g in unit_groups %}
+    <option value="{{ g.id }}">{{ g.name }}</option>
+  {% endfor %}
+</select>
