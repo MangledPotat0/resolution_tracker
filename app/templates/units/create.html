@@ -1,0 +1,21 @@
+<h2>Create a New Unit</h2>
+
+<form method="POST">
+  <label>Name:</label>
+  <input type="text" name="name" required>
+
+  <label>Unit Group:</label>
+  <select name="group_id" required>
+    {% for g in groups %}
+      <option value="{{ g.id }}">{{ g.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Factor:</label>
+  <input type="number" step="0.0001" name="factor" required>
+  <label>Shift:</label>
+  <input type="number" step="0.0001" name="shift" required>
+  <button type="submit">Create</button>
+</form>
+
+<a href="/menu?table=units">Back to Units Menu</a>
