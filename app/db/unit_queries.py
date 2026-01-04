@@ -49,6 +49,10 @@ SELECT id, name, group_id, factor, shift, is_canonical
 FROM units
 WHERE id = %s;
 """
+GET_ALL_UNITS = """
+SELECT id, name, group_id, factor, shift, is_canonical
+FROM units;
+"""
 INSERT_UNIT = """
 INSERT INTO units (name, group_id, factor, shift)
 VALUES (%s, %s, %s, %s)
@@ -183,6 +187,22 @@ def get_unit(conn: connection, unit_id: int) -> Optional[Dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(GET_UNIT, (unit_id,))
         return cur.fetchone()
+
+def get_all_units(conn: connection) -> List[Dict[str, Any]]:
+    """
+    Fetches all units from the units table.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+
+    Returns:
+        List[Dict[str, Any]]: List of RealDictCursor dict objects containing
+            the records from units table.
+    """
+
+    with conn.cursor() as cur:
+        cur.execute(GET_ALL_UNITS)
+        return cur.fetchall()
 
 def insert_unit(conn: connection, name: str, group_id: int,
         factor: float, shift: float) -> int:
