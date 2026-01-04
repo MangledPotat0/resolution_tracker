@@ -10,7 +10,7 @@ from flask import Blueprint, current_app, render_template, request, redirect, \
                   url_for
 
 # local module imports
-from app.db.unit_queries import insert_unit_group
+from app.db.unit_queries import get_all_unit_groups, insert_unit_group
 
 unit_groups_bp = Blueprint("unit_groups", __name__)
 
@@ -21,7 +21,7 @@ def unit_groups_action_router():
         case "create":
             return redirect(url_for("unit_groups.create_unit_group"))
         case "view":
-            return redirect(url_for("unit_groups.view_unit_group"))
+            return redirect(url_for("unit_groups.view_unit_groups"))
         case "update":
             return redirect(url_for("unit_groups.update_unit_group"))
         case "delete":
@@ -42,5 +42,11 @@ def create_unit_group():
             return f"Error creating unit group: {e}"
 
     return render_template("unit_groups/create.html")
+
+@unit_groups_bp.route("/view", methods=["GET"])
+def view_unit_groups():
+    conn = current_app.db
+    groups = get_all_unit_groups(conn)
+    return render_template("unit_groups/view.html", groups=groups)
 
 # EOF
