@@ -1,0 +1,26 @@
+<h3>Edit Unit</h3>
+<form method="POST" action="/units/update">
+
+  <input type="hidden" name="unit_id" value="{{ unit.id}}">
+
+  <label>Name:</label>
+  <input type="text" name="name" value="{{ unit.name }}" required>
+
+  <label>Unit Group:</label>
+  <select name="group_id" required>
+    {% for g in groups %}
+      <option value="{{ g.id }}"
+      	{% if g.id == unit.group_id %}selected{% endif %}>
+        {{ g.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <label>Factor:</label>
+  <input type="number" step="0.0001" name="factor" value="{{ unit.factor }}" required>
+
+  <label>Shift:</label>
+  <input type="number" step="0.0001" name="shift" value="{{ unit.shift }}" required>
+  <button type="submit">Update</button>
+
+</form>
