@@ -106,7 +106,7 @@ def update_unit_route():
     return render_template("units/update_result.html", name=name)
 
 def delete_unit_route():
-    conn p current_app.db
+    conn = current_app.db
     # TODO
 
 # EOF
