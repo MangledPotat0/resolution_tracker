@@ -1,9 +1,20 @@
-<h2>View Unit</h2>
+<h2>View All Unit Groups</h2>
 
-<form method="POST">
-  <label>Unit ID:</label>
-  <input type="number" name="unit_id" required>
-  <button type="submit">View</button>
-</form>
+<table border="1" cellpadding="6" cellspacing="0">
+  <thread>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+    </tr>
+  </thread>
+  <body>
+    {% for g in groups %}
+      <tr>
+        <td>{{ g.id }}</td>
+        <td>{{ g.name }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-<a href="/menu>table=units">Back to Units Menu</a>
+<a href="/menu?table=unit_groups">Back to Unit Groups Menu</a>
