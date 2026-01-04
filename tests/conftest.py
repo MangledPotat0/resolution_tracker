@@ -4,6 +4,7 @@
 import os
 import pytest
 import psycopg2
+from psycopg2.extras import RealDictCursor
 
 TEST_DB_NAME = "testdb"
 TEST_USER = "testuser"
@@ -28,7 +29,8 @@ def conn():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        port=os.getenv("DB_PORT"),
+        cursor_factory=RealDictCursor
     )
     yield conn
     conn.close()
