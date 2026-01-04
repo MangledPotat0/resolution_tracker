@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-connection.py
+app/db/connection.py
 Establishes connection to the postgreSQL database that stores all the data
 entries.
 """
