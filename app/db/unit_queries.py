@@ -6,7 +6,7 @@ All the psql queries for database transactions related to units.
 """
 
 # Built-in module imports
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 # 3rd party module imports
 from psycopg2.extensions import connection
@@ -23,6 +23,10 @@ JOIN units unit
     ON ugroup.id = unit.group_id
 WHERE ugroup.id = %s
     AND unit.is_canonical = true;
+"""
+GET_ALL_UNIT_GROUPS = """
+SELECT id, name
+FROM unit_groups
 """
 INSERT_UNIT_GROUP = """
 INSERT INTO unit_groups (name)
@@ -72,7 +76,8 @@ WHERE id = %s;
 """
 
 # Python wrappers for unit_groups table manipulation
-def get_unit_group(conn: connection, group_id: int) -> Optional[Dict[str, Any]]:
+def get_unit_group(conn: connection, group_id: int) \
+        -> Optional[Dict[str, Any]]:
     """
     Fetches a unit group by ID from unit_groups table.
 
@@ -87,6 +92,21 @@ def get_unit_group(conn: connection, group_id: int) -> Optional[Dict[str, Any]]:
     with conn.cursor() as cur:
         cur.execute(GET_UNIT_GROUP, (group_id,))
         return cur.fetchone()
+
+def get_all_unit_groups(conn: connection) -> List[str]:
+    """
+    Fetches all unit groups from unit_groups table.
+
+    Args:
+        conn (connection): Handle for psql database connection.
+
+    Returns:
+        List[Dict[str, Any]]: List of Dict object from RealDictCursor
+        containing unit groups.
+    """
+    with conn.cursor() as cur:
+        cur.execute(GET_ALL_UNIT_GROUPS)
+        return cur.fetchall()
 
 def insert_unit_group(conn: connection, group_name: str,
         canonical_unit_name: str) -> int:
@@ -105,6 +125,8 @@ def insert_unit_group(conn: connection, group_name: str,
     Returns:
         int: id assigned to the newly created unit_group record.
     """
+    print(group_name)
+    print(canonical_unit_name)
     with conn.cursor() as cur:
         cur.execute(INSERT_UNIT_GROUP, (group_name,))
         group_id = cur.fetchone()["id"]
