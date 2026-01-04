@@ -1,0 +1,9 @@
+<h2>Unit Group Updated Successfully</h2>
+
+{% if error %}
+  <p style:"color: red;">{{ error }}</p>
+  <a href="/unit_groups/update_unit">Return</a>
+{% else %}
+  <p>The unit group <strong>{{ name }}</strong> has been updated.</p>
+  <a href="/menu?table=unit_groups">Back to Unit Groups Menu</a>
+{% endif %}
