@@ -42,6 +42,12 @@ def create_unit_group():
         except Exception as e:
             return f"Error creating unit group: {e}"
 
+        return render_template(
+            "unit_groups/create_result.html",
+            group_id=new_id,
+            group_name=group_name,
+        )
+
     return render_template("unit_groups/create.html")
 
 @unit_groups_bp.route("/view", methods=["GET"])
