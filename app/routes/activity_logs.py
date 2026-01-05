@@ -18,6 +18,8 @@ from app.db.unit_queries import get_all_units_by_group, get_all_unit_groups, \
 
 activity_logs_bp = Blueprint("activity_logs", __name__)
 
+# -------------------------------- ENTRY POINT --------------------------------
+
 @activity_logs_bp.route("/action")
 def activity_logs_action_router():
     action = request.args.get("action")
@@ -32,6 +34,29 @@ def activity_logs_action_router():
             return redirect(url_for("activity_logs.delete_activity_log_start"))
         case _:
             return "Invalid action", 400
+
+# ------------------------------- SHARED ROUTES -------------------------------
+
+@activity_logs_bp.route("/create/units")
+@activity_logs_bp.route("/view/units")
+def units_dropdown():
+    conn = current_app.db
+    activity_type_id = request.args.get("activity_type_id")
+
+    if not activity_type_id:
+        units = []
+    else:
+        activity_type = get_activity_type(conn, activity_type_id)
+        allowed_units = get_all_units_by_group(
+                conn,
+                activity_type["unit_group_id"]
+        )
+    return render_template(
+            "activity_logs/partials/units_dropdown.html",
+            units=allowed_units,
+    )
+
+# ------------------------------- CREATE ROUTES -------------------------------
 
 @activity_logs_bp.route("/create", methods=["GET", "POST"])
 def create_activity():
@@ -57,24 +82,7 @@ def create_activity():
             activity_types=activity_types,
     )
 
-@activity_logs_bp.route("/create/units")
-@activity_logs_bp.route("/view/units")
-def units_dropdown():
-    conn = current_app.db
-    activity_type_id = request.args.get("activity_type_id")
-
-    if not activity_type_id:
-        units = []
-    else:
-        activity_type = get_activity_type(conn, activity_type_id)
-        allowed_units = get_all_units_by_group(
-                conn,
-                activity_type["unit_group_id"]
-        )
-    return render_template(
-            "activity_logs/partials/units_dropdown.html",
-            units=allowed_units,
-    )
+# ------------------------------- VIEW ROUTES  -------------------------------
 
 @activity_logs_bp.route("/view", methods=["GET"])
 def view_activity_logs():
@@ -113,57 +121,16 @@ def view_activity_log_table():
         unit_name=unit_name
     )
 
+# ------------------------------- UPDATE ROUTES -------------------------------
+
 @activity_logs_bp.route("/update_start", methods=["GET"])
 def update_activity_log_start():
-    return manipulate_activity_log_start("update")
-
-@activity_logs_bp.route("/delete_start", methods=["GET"])
-def delete_activity_log_start():
-    return manipulate_activity_log_start("delete")
-
-def manipulate_activity_log_start(action):
     conn = current_app.db
-    activity_logs = get_all_activity_logs(conn)
-
+    activity_types = get_all_activity_types(conn)
     return render_template(
-        f"activity_logs/{action}.html",
-        activity_logs=activity_logs,
-        hx_get_url=f"/activity_logs/{action}/get_activity_logs",
-        hx_target="#activity-types-dropdown"
+            "activity_logs/update.html",
+            activity_types=activity_types,
     )
-
-@activity_logs_bp.route("/update/get_activity_logs")
-@activity_logs_bp.route("/delete/get_activity_logs")
-def get_activity_logs():
-    conn = current_app.db
-    activity_logs = get_all_activity_logs(conn)
-    workflow = "/".join(request.path.split("/")[:3])
-    match workflow:
-        case "/activity_logs/update":
-            hx_get_url=f"{workflow}/get_activity_log_form"
-            hx_target="#activity-type-update-form"
-        case "/activity_logs/delete":
-            hx_get_url=f"{workflow}/get_activity_log_form"
-            hx_target="#activity-type-delete-form"
-        case _:
-            raise ValueError(f"Unexpected worfklow: {workflow}")
-    return render_template(
-            "activity_logs/partials/activity_logs_dropdown.html",
-            activity_logs=activity_logs,
-            hx_get_url=hx_get_url,
-            hx_target=hx_target
-    )
-
-@activity_logs_bp.route("/update/get_activity_log_form")
-def get_activity_update_form():
-    activity_id = request.args.get("id")
-    conn = current_app.db
-    activity = get_activity_log(conn, activity_id)
-    groups = get_all_unit_groups(conn)
-
-    return render_template(
-            "activity_logs/partials/activity_log_update_form.html",
-            activity=activity, groups=groups)
 
 @activity_logs_bp.route("/update/submit", methods=["POST"])
 def update_activity_log_submit():
@@ -177,6 +144,12 @@ def update_activity_log_submit():
 
     return render_template("activity_logs/update_result.html",
                            name=activity_name)
+
+# ------------------------------- DELETE ROUTES -------------------------------
+
+@activity_logs_bp.route("/delete_start", methods=["GET"])
+def delete_activity_log_start():
+    return manipulate_activity_log_start("delete")
 
 @activity_logs_bp.route("/delete/get_activity_type_form")
 def get_activity_delete_form():
