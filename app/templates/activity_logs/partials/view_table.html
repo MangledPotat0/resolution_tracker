@@ -1,0 +1,21 @@
+<table border="1" cellpadding="6" cellspacing="0">
+  <thread>
+    <tr>
+      <th>ID</th>
+      <th>Activity Type</th>
+      <th>Quantity {% if unit_name %} ({{ unit_name }}) {% endif %}</th>
+      <th>Timestamp</th>
+    </tr>
+  </thread>
+  <body>
+    {% for log in logs %}
+      <tr>
+        <td>{{ log.id }}</td>
+        <td>{{ log.activity_type_name }}</td>
+        <td>{{ log.display_quantity }}</td>
+        <td>{{ log.timestamp }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+

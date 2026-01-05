@@ -40,7 +40,6 @@ def create_activity():
     if request.method == "POST":
         activity_type_id = request.form["activity_type_id"]
         unit_id = request.form["unit_id"]
-        print(unit_id)
         quantity = request.form["quantity"]
         
         activity_id = insert_activity_log(
@@ -59,6 +58,7 @@ def create_activity():
     )
 
 @activity_logs_bp.route("/create/units")
+@activity_logs_bp.route("/view/units")
 def units_dropdown():
     conn = current_app.db
     activity_type_id = request.args.get("activity_type_id")
@@ -76,30 +76,42 @@ def units_dropdown():
             units=allowed_units,
     )
 
-@activity_logs_bp.route("/create/get_activity_log_form")
-def get_activity_create_form():
-    conn = current_app.db
-    unit_id = request.args.get("unit_id")
-    unit = get_unit(conn, unit_id)
-    group = get_unit_group(conn, unit["group_id"])
-    allowed_units = get_all_units_by_group(conn, group["id"])
-
-    return render_template(
-            "activity_logs/partials/activity_log_create_form.html",
-            activity=activity_type_id, units=allowed_units)
-
 @activity_logs_bp.route("/view", methods=["GET"])
 def view_activity_logs():
     conn = current_app.db
-    activity_type_id = 1
-    display_unit_id = 1
-    activity_logs = get_activity_logs_for_type(
-            conn, display_unit_id, activity_type_id)
-    for i in range(len(activity_logs)):
-        activity_logs[i]["activity_type_name"] = get_unit_group(
-            conn, activity_logs[i]["activity_type_id"])["name"] 
-    return render_template("activity_logs/view.html",
-                           activity_logs=activity_logs)
+    activity_types = get_all_activity_types(conn)
+    return render_template(
+            "activity_logs/view.html",
+            activity_types=activity_types,
+    )
+
+@activity_logs_bp.route("/view/table")
+def view_activity_log_table():
+    conn = current_app.db
+    activity_type_id = request.args.get("activity_type_id")
+    unit_id = request.args.get("unit_id")
+    unit_name = get_unit(conn, unit_id)["name"]
+    print(unit_name)
+    print(unit_id)
+    print(activity_type_id)
+
+    if not activity_type_id or not unit_id:
+        logs = []
+    else:
+        logs = get_activity_logs_for_type(
+            conn,
+            unit_id,
+            activity_type_id
+        )
+        for i in range(len(logs)):
+            logs[i]["activity_type_name"] = get_activity_type(
+                    conn, activity_type_id)["name"]
+
+    return render_template(
+        "activity_logs/partials/view_table.html",
+        logs=logs,
+        unit_name=unit_name
+    )
 
 @activity_logs_bp.route("/update_start", methods=["GET"])
 def update_activity_log_start():

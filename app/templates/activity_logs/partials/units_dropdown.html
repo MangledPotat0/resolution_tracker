@@ -1,5 +1,14 @@
 <label>Unit:</label>
-<select name="unit_id">
+<select id="activity-logs-unit-select"
+  name="unit_id"
+  hx-get="/activity_logs/view/table"
+  hx-target="#activity-log-table"
+  hx-trigger="change"
+  hx-include="[name=activity_type_id]"
+  hx-vals='{
+    "unit_id": this.value,
+  }'
+>
   <option value="">-- Select Unit --</option>
   {% for unit in units %}
     <option value="{{ unit.id }}">{{ unit.name }}</option>
