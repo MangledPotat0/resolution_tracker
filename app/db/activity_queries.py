@@ -18,26 +18,26 @@ GET_ACTIVITY_TYPE = """
 SELECT
     type.id,
     type.name,
-    type.unit_group_id,
+    type.unit_id,
     ug.name AS unit_group,
     type.goal_quantity
 FROM activity_types type
-JOIN unit_groups ug ON type.unit_group_id = ug.id
+JOIN unit_groups ug ON type.unit_id = ug.id
 WHERE type.id = %s;
 """
 GET_ALL_ACTIVITY_TYPES = """
-SELECT id, name
-FROM activity types;
+SELECT id, name, unit_id, goal_quantity
+FROM activity_types;
 """
 INSERT_ACTIVITY_TYPE = """
-INSERT INTO activity_types (name, unit_group_id, goal_quantity)
+INSERT INTO activity_types (name, unit_id, goal_quantity)
 VALUES (%s, %s, %s) RETURNING id;
 """
 UPDATE_ACTIVITY_TYPE = """
 UPDATE activity_types
 SET
     name = %s,
-    unit_group_id = %s,
+    unit_id = %s,
     goal_quantity = %s
 WHERE id = %s;
 """
@@ -118,7 +118,7 @@ def get_activity_type(conn: connection, activity_type_id: int) \
         row = cur.fetchone()
         return row
 
-def insert_activity_type(conn: connection, name: str, unit_group_id: int,
+def insert_activity_type(conn: connection, unit_id: int, name: str,
         goal_quantity: float=None) -> None:
     """
     Insert a new activity type record to the database.
@@ -126,7 +126,7 @@ def insert_activity_type(conn: connection, name: str, unit_group_id: int,
     Args:
         conn (connection): Handle for psql database connection.
         name (str): Name of the new activity type.
-        unit_group_id (int): The unit group of measure for the activity.
+        unit_id (int): The unit group of measure for the activity.
         goal_quantity (int): The goal for activity. Value is optional, if None
             then goal_quantity field of database is null.
     """
@@ -134,12 +134,14 @@ def insert_activity_type(conn: connection, name: str, unit_group_id: int,
     with conn.cursor() as cur:
         cur.execute(
             INSERT_ACTIVITY_TYPE,
-            (name, unit_group_id, goal_quantity,)
+            (name, unit_id, goal_quantity,)
         )
+        activity_type_id = cur.fetchone()["id"]
     conn.commit()
+    return activity_type_id
 
 def update_activity_type(conn: connection, activity_type_id: int, name: str,
-        unit_group_id: int, goal_quantity:int = None) -> None:
+        unit_id: int, goal_quantity:int = None) -> None:
     """
     Updates an existing activity_type record with new attribute values.
 
@@ -148,14 +150,14 @@ def update_activity_type(conn: connection, activity_type_id: int, name: str,
         activity_type_id (int): The id of the activity_type record that needs
             to be updated.
         name (str): New name given to the activity type.
-        unit_group_id (int): New unit group of measure for the activity type.
+        unit_id (int): New unit group of measure for the activity type.
         goal_quantity (int): New goal for activity type. Value is optional, if
             None, then goal_quantity field of database is null.
     """
     with conn.cursor() as cur:
         cur.execute(
             UPDATE_ACTIVITY_TYPE,
-            (name, unit_group_id, goal_quantity, activity_type_id,)
+            (name, unit_id, goal_quantity, activity_type_id,)
         )
     conn.commit()
 
