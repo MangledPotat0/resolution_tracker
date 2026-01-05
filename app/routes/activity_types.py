@@ -26,9 +26,11 @@ def activity_types_action_router():
         case "view":
             return redirect(url_for("activity_types.view_activity_types"))
         case "update":
-            return redirect(url_for("activity_types.update_activity_type_start"))
+            return redirect(
+                    url_for("activity_types.update_activity_type_start"))
         case "delete":
-            return redirect(url_for("activity_types.delete_activity_type_start"))
+            return redirect(
+                    url_for("activity_types.delete_activity_type_start"))
         case _:
             return "Invalid action", 400
 
