@@ -18,7 +18,6 @@ activity_types_bp = Blueprint("activity_types", __name__)
 
 @activity_types_bp.route("/action")
 def activity_types_action_router():
-    print("AAA")
     action = request.args.get("action")
     match action:
         case "create":
