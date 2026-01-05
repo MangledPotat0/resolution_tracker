@@ -1,0 +1,24 @@
+<h2>View All Activity Types</h2>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <thread>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Unit Group</th>
+      <th>Goal Quantity</th>
+    </tr>
+  </thread>
+  <body>
+    {% for u in activities %}
+      <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.name }}</td>
+        <td>{{ u.unit_name }}</td>
+        <td>{{ u.goal_quantity }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="/menu?table=activity_types">Back to Activity Types Menu</a>

@@ -1,0 +1,21 @@
+<h2>Create a New Activity Type</h2>
+
+<form method="POST">
+  <label>Name:</label>
+  <input type="text" name="name" required>
+
+  <label>Unit Group:</label>
+  <select name="group_id" required>
+    {% for g in groups %}
+      <option value="{{ g.id }}">{{ g.name }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Goal Quantity:</label>
+  <input type="number" step="0.0001" name="goal_quantity">
+  <button type="submit">Create</button>
+</form>
+
+<a href="/menu?table=activities">Back to Activity Types Menu</a>
+
+    type.goal_quantity
