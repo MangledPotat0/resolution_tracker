@@ -13,7 +13,8 @@ CREATE_ACTIVITY_TYPES_TABLE = """
 CREATE TABLE IF NOT EXISTS activity_types (
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
-    unit_id INTEGER NOT NULL REFERENCES units(id) ON DELETE CASCADE,
+    unit_group_id INTEGER NOT NULL REFERENCES unit_groups(id)
+        ON DELETE CASCADE,
     goal_quantity DOUBLE PRECISION
 );
 """

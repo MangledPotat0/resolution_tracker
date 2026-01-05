@@ -18,26 +18,26 @@ GET_ACTIVITY_TYPE = """
 SELECT
     type.id,
     type.name,
-    type.unit_id,
+    type.unit_group_id,
     ug.name AS unit_group,
     type.goal_quantity
 FROM activity_types type
-JOIN unit_groups ug ON type.unit_id = ug.id
+JOIN unit_groups ug ON type.unit_group_id = ug.id
 WHERE type.id = %s;
 """
 GET_ALL_ACTIVITY_TYPES = """
-SELECT id, name, unit_id, goal_quantity
+SELECT id, name, unit_group_id, goal_quantity
 FROM activity_types;
 """
 INSERT_ACTIVITY_TYPE = """
-INSERT INTO activity_types (name, unit_id, goal_quantity)
+INSERT INTO activity_types (name, unit_group_id, goal_quantity)
 VALUES (%s, %s, %s) RETURNING id;
 """
 UPDATE_ACTIVITY_TYPE = """
 UPDATE activity_types
 SET
     name = %s,
-    unit_id = %s,
+    unit_group_id = %s,
     goal_quantity = %s
 WHERE id = %s;
 """
@@ -52,7 +52,7 @@ SELECT
     act.activity_type_id,
     act.canonical_quantity,
     act.timestamp,
-    disp.id AS display_unit_id,
+    disp.id AS display_unit_group_id,
     disp.name AS display_unit_name,
     act.canonical_quantity / disp.factor AS display_quantity
 FROM activity_logs act
@@ -87,7 +87,7 @@ SELECT
     act.activity_type_id,
     act.canonical_quantity,
     act.timestamp,
-    disp.id AS display_unit_id,
+    disp.id AS display_unit_group_id,
     disp.name AS display_unit_name,
     act.canonical_quantity / disp.factor AS display_quantity
 FROM activity_logs act
@@ -118,7 +118,7 @@ def get_activity_type(conn: connection, activity_type_id: int) \
         row = cur.fetchone()
         return row
 
-def insert_activity_type(conn: connection, unit_id: int, name: str,
+def insert_activity_type(conn: connection, unit_group_id: int, name: str,
         goal_quantity: float=None) -> None:
     """
     Insert a new activity type record to the database.
@@ -126,7 +126,7 @@ def insert_activity_type(conn: connection, unit_id: int, name: str,
     Args:
         conn (connection): Handle for psql database connection.
         name (str): Name of the new activity type.
-        unit_id (int): The unit group of measure for the activity.
+        unit_group_id (int): The unit group of measure for the activity.
         goal_quantity (int): The goal for activity. Value is optional, if None
             then goal_quantity field of database is null.
     """
@@ -134,14 +134,14 @@ def insert_activity_type(conn: connection, unit_id: int, name: str,
     with conn.cursor() as cur:
         cur.execute(
             INSERT_ACTIVITY_TYPE,
-            (name, unit_id, goal_quantity,)
+            (name, unit_group_id, goal_quantity,)
         )
         activity_type_id = cur.fetchone()["id"]
     conn.commit()
     return activity_type_id
 
 def update_activity_type(conn: connection, activity_type_id: int, name: str,
-        unit_id: int, goal_quantity:int = None) -> None:
+        unit_group_id: int, goal_quantity:float = None) -> None:
     """
     Updates an existing activity_type record with new attribute values.
 
@@ -150,14 +150,14 @@ def update_activity_type(conn: connection, activity_type_id: int, name: str,
         activity_type_id (int): The id of the activity_type record that needs
             to be updated.
         name (str): New name given to the activity type.
-        unit_id (int): New unit group of measure for the activity type.
+        unit_group_id (int): New unit group of measure for the activity type.
         goal_quantity (int): New goal for activity type. Value is optional, if
             None, then goal_quantity field of database is null.
     """
     with conn.cursor() as cur:
         cur.execute(
             UPDATE_ACTIVITY_TYPE,
-            (name, unit_id, goal_quantity, activity_type_id,)
+            (name, unit_group_id, goal_quantity, activity_type_id,)
         )
     conn.commit()
 
@@ -175,14 +175,14 @@ def delete_activity_type(conn: connection, activity_type_id: int) -> None:
     conn.commit()
 
 ## activity logs
-def get_activity_log(conn: connection, display_unit_id: int, log_id: str) \
+def get_activity_log(conn: connection, display_unit_group_id: int, log_id: str) \
         -> Optional[Dict[str, Any]]:
     """
     Fetches an activity log record from the database by log_id.
 
     Args:
         conn (connection): Handle for psql database connection.
-        display_unit_id (int): ID corresponding to the user specified display
+        display_unit_group_id (int): ID corresponding to the user specified display
             quantity for the record being requested.
         log_id (int): Unique identifier for a record of interest in
             activity_logs table.
@@ -192,12 +192,12 @@ def get_activity_log(conn: connection, display_unit_id: int, log_id: str) \
             tuple if exists. Otherwise None.
     """
     with conn.cursor() as cur:
-        cur.execute(GET_ACTIVITY_LOG, (display_unit_id, log_id,))
+        cur.execute(GET_ACTIVITY_LOG, (display_unit_group_id, log_id,))
         row = cur.fetchone()
         return row
 
 def insert_activity_log(conn: connection, activity_type_id: int,
-        quantity: float, unit_id: int) -> None:
+        quantity: float, unit_group_id: int) -> None:
     """
     Insert a new activity type record to the database.
 
@@ -206,18 +206,18 @@ def insert_activity_log(conn: connection, activity_type_id: int,
         activity_type_id (int): The id of the activity being logged.
         quantity (int): The amount of activity performed, measured in user
                 specified unit.
-        unit_id (int): The id of the unit for the quantity entered.
+        unit_group_id (int): The id of the unit for the quantity entered.
     """
 
     with conn.cursor() as cur:
         cur.execute(
             INSERT_ACTIVITY_LOG,
-            (activity_type_id, quantity, unit_id)
+            (activity_type_id, quantity, unit_group_id)
         )
     conn.commit()
 
 def update_activity_log(conn: connection, log_id: int, activity_type_id: int,
-        quantity: float, unit_id: int) -> None:
+        quantity: float, unit_group_id: int) -> None:
     """
     Updates an existing activity_log record with new attribute values.
 
@@ -231,7 +231,7 @@ def update_activity_log(conn: connection, log_id: int, activity_type_id: int,
     with conn.cursor() as cur:
         cur.execute(
             UPDATE_ACTIVITY_LOG,
-            (activity_type_id, quantity, unit_id, log_id,)
+            (activity_type_id, quantity, unit_group_id, log_id,)
         )
     conn.commit()
 
@@ -264,7 +264,7 @@ def get_all_activity_types(conn: connection) -> List[Dict[str, Any]]:
         cur.execute(GET_ALL_ACTIVITY_TYPES)
         return cur.fetchall()
 
-def get_activity_logs_for_type(conn: connection, display_unit_id: int,
+def get_activity_logs_for_type(conn: connection, display_unit_group_id: int,
         activity_type_id: int) -> List[Dict[str, Any]]:
     """
     Fetches all the activity log records matching the specified
@@ -272,7 +272,7 @@ def get_activity_logs_for_type(conn: connection, display_unit_id: int,
 
     Args:
         conn (connection): Handle for psql database connection.
-        display_unit_id (int): unit_id value of the user's specified unit for
+        display_unit_group_id (int): unit_group_id value of the user's specified unit for
             presenting the values.
         activity_type_id (int): ID value for the activity of interest.
 
@@ -282,6 +282,6 @@ def get_activity_logs_for_type(conn: connection, display_unit_id: int,
     """
     with conn.cursor() as cur:
         cur.execute(GET_ACTIVITY_LOGS_FOR_TYPE,
-                    (display_unit_id, activity_type_id,))
+                    (display_unit_group_id, activity_type_id,))
         return cur.fetchall()
 # EOF
