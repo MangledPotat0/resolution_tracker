@@ -150,6 +150,10 @@ def delete_unit_route():
     unit_id = request.form["unit_id"]
     name = request.form["name"]
     is_canonical = request.form["is_canonical"]
+    if is_canonical == "True":
+        is_canonical = True
+    elif is_canonical == "False":
+        is_canonical = False
 
     if is_canonical:
         return render_template(
