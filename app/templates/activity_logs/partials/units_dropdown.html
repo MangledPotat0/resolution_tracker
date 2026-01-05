@@ -1,0 +1,7 @@
+<label>Unit:</label>
+<select name="unit_id">
+  <option value="">-- Select Unit --</option>
+  {% for unit in units %}
+    <option value="{{ unit.id }}">{{ unit.name }}</option>
+  {% endfor %}
+</select>

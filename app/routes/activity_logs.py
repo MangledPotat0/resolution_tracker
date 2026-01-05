@@ -10,6 +10,11 @@ from flask import Blueprint, current_app, render_template, request, redirect, \
                   url_for
 
 # local module imports
+from app.db.activity_queries import get_activity_logs_for_type, \
+        get_activity_log, get_activity_type, get_all_activity_types, \
+        insert_activity_log
+from app.db.unit_queries import get_all_units_by_group, get_all_unit_groups, \
+        get_unit, get_unit_group
 
 activity_logs_bp = Blueprint("activity_logs", __name__)
 
@@ -31,43 +36,68 @@ def activity_logs_action_router():
 @activity_logs_bp.route("/create", methods=["GET", "POST"])
 def create_activity():
     conn = current_app.db
+    activity_types = get_all_activity_types(conn)
     if request.method == "POST":
-        name = request.form.get("name")
-        type_id = request.form.get("activity_type_id")
-        quantity = request.form.get("quantity")
-
-        activity_type_name = get_activity_type(conn, activity_type_id)["name"]
-        try:
-            if len(quantity) > 0:
-                quantity = float(quantity)
-            else:
-                quantity = None
-        except ValueError:
-            return "quantity must be numbers."
-
-        try:
-            new_id = insert_activity_log(conn, group_id, name, quantity)
-        except Exception as e:
-            return f"Error creating activity: {e}"
+        activity_type_id = request.form["activity_type_id"]
+        unit_id = request.form["unit_id"]
+        print(unit_id)
+        quantity = request.form["quantity"]
+        
+        activity_id = insert_activity_log(
+                conn, activity_type_id, quantity, unit_id
+        )
+        activity = get_activity_log(conn, unit_id, activity_id)
         
         return render_template(
-            "activity_logs/create_result.html",
-            activity_id=new_id,
-            name=name,
-            group_name=group_name,
-            quantity=quantity
+                "activity_logs/create_result.html",
+                activity=activity
         )
 
-    groups = get_all_unit_groups(conn)
-    return render_template("activity_logs/create.html", groups=groups)
+    return render_template(
+            "activity_logs/create.html",
+            activity_types=activity_types,
+    )
+
+@activity_logs_bp.route("/create/units")
+def units_dropdown():
+    conn = current_app.db
+    activity_type_id = request.args.get("activity_type_id")
+
+    if not activity_type_id:
+        units = []
+    else:
+        activity_type = get_activity_type(conn, activity_type_id)
+        allowed_units = get_all_units_by_group(
+                conn,
+                activity_type["unit_group_id"]
+        )
+    return render_template(
+            "activity_logs/partials/units_dropdown.html",
+            units=allowed_units,
+    )
+
+@activity_logs_bp.route("/create/get_activity_log_form")
+def get_activity_create_form():
+    conn = current_app.db
+    unit_id = request.args.get("unit_id")
+    unit = get_unit(conn, unit_id)
+    group = get_unit_group(conn, unit["group_id"])
+    allowed_units = get_all_units_by_group(conn, group["id"])
+
+    return render_template(
+            "activity_logs/partials/activity_log_create_form.html",
+            activity=activity_type_id, units=allowed_units)
 
 @activity_logs_bp.route("/view", methods=["GET"])
 def view_activity_logs():
     conn = current_app.db
-    activity_logs = get_all_activity_logs(conn)
+    activity_type_id = 1
+    display_unit_id = 1
+    activity_logs = get_activity_logs_for_type(
+            conn, display_unit_id, activity_type_id)
     for i in range(len(activity_logs)):
-        activity_logs[i]["unit_group_name"] = get_unit_group(
-            conn, activity_logs[i]["unit_group_id"])["name"] 
+        activity_logs[i]["activity_type_name"] = get_unit_group(
+            conn, activity_logs[i]["activity_type_id"])["name"] 
     return render_template("activity_logs/view.html",
                            activity_logs=activity_logs)
 
@@ -133,27 +163,27 @@ def update_activity_log_submit():
     update_activity_type(conn, activity_id, activity_name, unit_group_id,
                       goal_quantity)
 
-    return render_template("activity_types/update_result.html",
+    return render_template("activity_logs/update_result.html",
                            name=activity_name)
 
-@activity_types_bp.route("/delete/get_activity_type_form")
+@activity_logs_bp.route("/delete/get_activity_type_form")
 def get_activity_delete_form():
     activity_id = request.args.get("id")
     conn = current_app.db
     activity = get_activity_type(conn, activity_id)
 
     return render_template(
-            "activity_types/partials/activity_type_delete_form.html",
+            "activity_logs/partials/activity_type_delete_form.html",
             act=activity)
 
-@activity_types_bp.route("/delete/submit", methods=["POST"])
+@activity_logs_bp.route("/delete/submit", methods=["POST"])
 def delete_activity_type_submit():
     conn = current_app.db
     activity_id = request.form.get("id")
     activity_name = request.form.get("name")
     delete_activity_type(conn, activity_id)
 
-    return render_template("activity_types/delete_result.html",
+    return render_template("activity_logs/delete_result.html",
                            name=activity_name)
 
 # EOF

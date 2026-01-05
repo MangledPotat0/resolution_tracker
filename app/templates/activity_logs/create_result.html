@@ -1,0 +1,22 @@
+<h2>Activity Log Created Successfully</h2>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr>
+    <th>Activity Log ID</th>
+    <td>{{ activity.id }}</td>
+  </tr>
+  <tr>
+    <th>Activity Type</th>
+    <td>{{ activity.activity_type_id }}</td>
+  </tr>
+  <tr>
+    <th>Quantity</th>
+    <td>{{ activity.canonical_quantity }}</td>
+  </tr>
+  <tr>
+    <th>Timestamp</th>
+    <td>{{ activity.timestamp }}</td>
+  </tr>
+</table>
+
+<a href="/menu?table=activity_logs">Back to Activity Logs Menu</a>
