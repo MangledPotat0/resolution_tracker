@@ -140,4 +140,24 @@ def update_activity_type_submit():
     return render_template("activity_types/update_result.html",
                            name=activity_name)
 
+@activity_types_bp.route("/delete/get_activity_type_form")
+def get_activity_delete_form():
+    activity_id = request.args.get("id")
+    conn = current_app.db
+    activity = get_activity_type(conn, activity_id)
+
+    return render_template(
+            "activity_types/partials/activity_type_delete_form.html",
+            act=activity)
+
+@activity_types_bp.route("/delete/submit", methods=["POST"])
+def delete_activity_type_submit():
+    conn = current_app.db
+    activity_id = request.form.get("id")
+    activity_name = request.form.get("name")
+    delete_activity_type(conn, activity_id)
+
+    return render_template("activity_types/delete_result.html",
+                           name=activity_name)
+
 # EOF

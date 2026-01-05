@@ -1,0 +1,13 @@
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+<h2>Delete Activity Type</h2>
+
+<div id="activity-types-dropdown"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
+  hx-trigger="load"
+>
+</div>
+<div id="activity-type-delete-form"></div>
+
+<a href="/menu?table=activity_types">Back to Activity Types Menu</a>

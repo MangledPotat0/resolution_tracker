@@ -1,0 +1,9 @@
+<h2>Activity Type Deleted Successfully</h2>
+
+{% if error %}
+  <p style:"color: red;">{{ error }}</p>
+  <a href="/activity_types/delete_unit">Return</a>
+{% else %}
+  <p>The activity type <strong>{{ name }}</strong> has been deleted.</p>
+  <a href="/menu?table=activity_types">Back to Activity Types Menu</a>
+{% endif %}
