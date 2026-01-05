@@ -1,0 +1,39 @@
+<h3>Update Activity Log</h3>
+
+{% if activity %}
+<form method="POST" action="/activity_logs/update/submit">
+  <input type="hidden" name="id" value="{{ activity.id }}">
+
+  <label for="name">Activity Name:</label>
+  <input
+    id="name"
+    type="text"
+    name="name"
+    value="{{ activity.name }}"
+    required
+  >
+
+  <label>Display Unit</label>
+  <select name="unit_id" required>
+    {% for u in units %}
+      <option value="{{ u.id }}"
+      	{% if u.id == canonical_unit_id %}selected{% endif %}>
+        {{ u.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <label for="name">Quantity</label>
+  <input
+    type="number"
+    step="0.0001"
+    name="display_quantity"
+    value="{{ activity.display_quantity }}"
+  >
+
+   <button type="submit">Update</button>
+</form>
+
+{% else %}
+<p style="color: red;">Invalid activity selected.</p>
+{% endif %}

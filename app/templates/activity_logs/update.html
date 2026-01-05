@@ -1,0 +1,29 @@
+<script src="https://unpkg.com/htmx.org"></script>
+
+<h2>Update Activity Log</h2>
+
+<label>Activity Type:</label>
+<select
+  id="activity-type-select"
+  name="activity_type_id"
+  hx-get="/activity_logs/view/units"
+  hx-target="#units-dropdown"
+  hx-trigger="change"
+  hx-vals='{"activity_type_id": this.value}'
+>
+  <option value="">-- Select Activity Type --</option>
+  {% for act in activity_types %}
+    <option value="{{ act.id }}">{{ act.name }}</option>
+  {% endfor %}
+</select>
+
+<div id="units-dropdown">
+  {% set units = [] %}
+  {% include "activity_logs/partials/units_dropdown.html" %}
+</div>
+
+<div id="activity-log-update-form">
+  {% include "activity_logs/partials/activity_log_update_form.html" %}
+</div>
+
+<a href="/menu?table=activity_logs">Back to Activity Logs Menu</a>

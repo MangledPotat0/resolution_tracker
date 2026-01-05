@@ -1,0 +1,13 @@
+<label>Select Activity Type:</label>
+<select
+  id="activity-type-select"
+  name="id"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
+  hx-trigger="change"
+>
+  <option value="">-- Select Activity Type --</option>
+  {% for act in activity_types %}
+    <option value="{{ act.id }}">{{ act.name }}</option>
+  {% endfor %}
+</select>
