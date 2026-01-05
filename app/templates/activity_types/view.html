@@ -10,11 +10,11 @@
     </tr>
   </thread>
   <body>
-    {% for u in activities %}
+    {% for u in activity_types %}
       <tr>
         <td>{{ u.id }}</td>
         <td>{{ u.name }}</td>
-        <td>{{ u.unit_name }}</td>
+        <td>{{ u.unit_group_name }}</td>
         <td>{{ u.goal_quantity }}</td>
       </tr>
     {% endfor %}

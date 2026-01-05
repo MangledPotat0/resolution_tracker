@@ -12,7 +12,7 @@ from app.db.connection import db_connect, db_close
 from app.db.schema import initialize_schema
 from app.routes.units import units_bp
 from app.routes.unit_groups import unit_groups_bp
-from app.routes.activity_types import activities_bp
+from app.routes.activity_types import activity_types_bp
 
 def create_app() -> Flask:
     """
@@ -25,7 +25,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.register_blueprint(units_bp, url_prefix="/units")
     app.register_blueprint(unit_groups_bp, url_prefix="/unit_groups")
-    app.register_blueprint(activities_bp, url_prefix="/activities")
+    app.register_blueprint(activity_types_bp, url_prefix="/activity_types")
     try:
         app.db = db_connect()
         initialize_schema(app.db)
