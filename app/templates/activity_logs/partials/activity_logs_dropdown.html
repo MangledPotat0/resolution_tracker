@@ -1,0 +1,14 @@
+<label>Select Activity Logs:</label>
+<select
+  id="activity-log-select"
+  name="id"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
+  hx-trigger="change"
+  hx-include="[name=activity_type_id]"
+>
+  <option value="">-- Select Activity Log --</option>
+  {% for act in activity_logs %}
+    <option value="{{ act.id }}">{{ act.id }}</option>
+  {% endfor %}
+</select>
