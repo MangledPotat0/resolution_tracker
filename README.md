@@ -17,6 +17,7 @@ my New Year's resolutions in 2026.
 - I've never used html beyond simple hello world static sites, and I've never touched htmx at all before, so they're probably not in the best shape.
 
 # TODO:
+- Finish writing tests so that future extensions to projects can actually progress in test driven approach
 - Flask routing in `app/routes/` has a lot of redundant stuff that can be cleaned up nicely
 - Flask routing in `app/routes` have no module and function docstrings because I was rewriting them completely too many times
 - I broke the activity logs update function at some point and just noticed it AFTER compiling a new Dockerfile so I am going to make that a later problem to fix.
