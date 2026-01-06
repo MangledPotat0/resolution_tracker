@@ -1,12 +1,12 @@
 <label>Unit:</label>
 <select id="activity-logs-unit-select"
   name="unit_id"
-  hx-get="/activity_logs/view/table"
-  hx-target="#activity-log-table"
+  hx-get="{{ hx_get_url }}"
+  hx-target="{{ hx_target }}"
   hx-trigger="change"
   hx-include="[name=activity_type_id]"
   hx-vals='{
-    "unit_id": this.value,
+    "unit_id": this.value
   }'
 >
   <option value="">-- Select Unit --</option>

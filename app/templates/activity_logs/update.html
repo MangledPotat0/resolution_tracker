@@ -2,14 +2,17 @@
 
 <h2>Update Activity Log</h2>
 
+<input type="hidden" name="hx_get_url" value="/activity_logs/update_form">
+<input type="hidden" name="hx_target" value="#activity-log-update-form">
+
 <label>Activity Type:</label>
 <select
   id="activity-type-select"
   name="activity_type_id"
-  hx-get="/activity_logs/view/units"
-  hx-target="#units-dropdown"
+  hx-get="/activity_logs/update/activity_logs"
+  hx-target="#activity-logs-dropdown"
   hx-trigger="change"
-  hx-vals='{"activity_type_id": this.value}'
+  hx-include="[name=activity_type_id], [name=hx_get_url], [name=hx_target]"
 >
   <option value="">-- Select Activity Type --</option>
   {% for act in activity_types %}
@@ -17,9 +20,9 @@
   {% endfor %}
 </select>
 
-<div id="units-dropdown">
-  {% set units = [] %}
-  {% include "activity_logs/partials/units_dropdown.html" %}
+<div id="activity-logs-dropdown">
+  {% set activity_logs = [] %}
+  {% include "activity_logs/partials/activity_logs_dropdown.html" %}
 </div>
 
 <div id="activity-log-update-form">

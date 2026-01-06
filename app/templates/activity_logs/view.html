@@ -2,6 +2,9 @@
 
 <h2>View All Activity Logs</h2>
 
+<input type="hidden" name="hx_get_url" value="/activity_logs/view/table">
+<input type="hidden" name="hx_target" value="#activity-log-table">
+
 <label>Activity Type:</label>
 <select
   id="activity-type-select"
@@ -9,7 +12,7 @@
   hx-get="/activity_logs/view/units"
   hx-target="#units-dropdown"
   hx-trigger="change"
-  hx-vals='{"activity_type_id": this.value}'
+  hx-include="[name=activity_type_id], [name=hx_get_url], [name=hx_target]"
 >
   <option value="">-- Select Activity Type --</option>
   {% for act in activity_types %}

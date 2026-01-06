@@ -4,12 +4,12 @@
 <form method="POST" action="/activity_logs/update/submit">
   <input type="hidden" name="id" value="{{ activity.id }}">
 
-  <label for="name">Activity Name:</label>
+  <label for="name">Activity ID:</label>
   <input
-    id="name"
-    type="text"
-    name="name"
-    value="{{ activity.name }}"
+    id="id"
+    type="number"
+    name="log_id"
+    value="{{ activity.id }}"
     required
   >
 
@@ -31,7 +31,12 @@
     value="{{ activity.display_quantity }}"
   >
 
-   <button type="submit">Update</button>
+  <button type="submit">Update</button>
+  <input 
+    type="hidden"
+    name="activity_type_id"
+    value="{{ activity.activity_type_id }}"
+  >
 </form>
 
 {% else %}

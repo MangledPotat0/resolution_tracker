@@ -10,9 +10,9 @@ from flask import Blueprint, current_app, render_template, request, redirect, \
                   url_for
 
 # local module imports
-from app.db.activity_queries import get_activity_logs_for_type, \
-        get_activity_log, get_activity_type, get_all_activity_types, \
-        insert_activity_log
+from app.db.activity_queries import delete_activity_log, \
+        get_activity_logs_for_type, get_activity_log, get_activity_type, \
+        get_all_activity_types, insert_activity_log, update_activity_log
 from app.db.unit_queries import get_all_units_by_group, get_all_unit_groups, \
         get_unit, get_unit_group
 
@@ -39,9 +39,12 @@ def activity_logs_action_router():
 
 @activity_logs_bp.route("/create/units")
 @activity_logs_bp.route("/view/units")
+@activity_logs_bp.route("/update/units")
 def units_dropdown():
     conn = current_app.db
     activity_type_id = request.args.get("activity_type_id")
+    hx_get_url = request.args.get("hx_get_url")
+    hx_target = request.args.get("hx_target")
 
     if not activity_type_id:
         units = []
@@ -53,7 +56,34 @@ def units_dropdown():
         )
     return render_template(
             "activity_logs/partials/units_dropdown.html",
+            hx_get_url=hx_get_url,
+            hx_target=hx_target,
             units=allowed_units,
+    )
+
+@activity_logs_bp.route("/update/activity_logs")
+def activity_logs_dropdown():
+    conn = current_app.db
+    activity_type_id = request.args.get("activity_type_id")
+    hx_get_url = request.args.get("hx_get_url")
+    hx_target = request.args.get("hx_target")
+
+    if not activity_type_id:
+        units = []
+    else:
+        ugroup_id = get_activity_type(conn, activity_type_id)["unit_group_id"]
+        display_unit_id = get_unit_group(conn, ugroup_id)["canonical_unit_id"]
+        activity_logs = get_activity_logs_for_type(
+                conn,
+                display_unit_id,
+                activity_type_id
+        )
+    return render_template(
+            "activity_logs/partials/activity_logs_dropdown.html",
+            hx_get_url=hx_get_url,
+            hx_target=hx_target,
+            activity_logs=activity_logs,
+            activity_type_id = activity_type_id
     )
 
 # ------------------------------- CREATE ROUTES -------------------------------
@@ -99,9 +129,6 @@ def view_activity_log_table():
     activity_type_id = request.args.get("activity_type_id")
     unit_id = request.args.get("unit_id")
     unit_name = get_unit(conn, unit_id)["name"]
-    print(unit_name)
-    print(unit_id)
-    print(activity_type_id)
 
     if not activity_type_id or not unit_id:
         logs = []
@@ -132,18 +159,33 @@ def update_activity_log_start():
             activity_types=activity_types,
     )
 
+@activity_logs_bp.route("/update_form")
+def get_activity_update_form():
+    conn = current_app.db
+    activity_id = request.args.get("id")
+    activity_type_id = request.args.get("activity_type_id")
+    ugroup_id = get_activity_type(conn, activity_type_id)["unit_group_id"]
+    units = get_all_units_by_group(conn, ugroup_id)
+    canonical_unit_id = get_unit_group(conn, ugroup_id)["canonical_unit_id"]
+    conn = current_app.db
+    activity = get_activity_log(conn, canonical_unit_id, activity_id)
+
+    return render_template(
+            "activity_logs/partials/activity_log_update_form.html",
+            activity=activity,
+            units=units)
+
 @activity_logs_bp.route("/update/submit", methods=["POST"])
 def update_activity_log_submit():
     conn = current_app.db
-    activity_id = request.form.get("id")
-    activity_name = request.form.get("name")
-    unit_group_id = request.form.get("group_id")
-    goal_quantity = request.form.get("goal_quantity")
-    update_activity_type(conn, activity_id, activity_name, unit_group_id,
-                      goal_quantity)
+    activity_type_id = request.form.get("activity_type_id")
+    log_id = request.form.get("log_id")
+    unit_id = request.form.get("unit_id")
+    display_quantity = request.form.get("display_quantity")
+    update_activity_log(conn, log_id, activity_type_id, display_quantity,
+                        unit_id)
 
-    return render_template("activity_logs/update_result.html",
-                           name=activity_name)
+    return render_template("activity_logs/update_result.html", log_id=log_id)
 
 # ------------------------------- DELETE ROUTES -------------------------------
 
@@ -164,8 +206,9 @@ def get_activity_delete_form():
 @activity_logs_bp.route("/delete/submit", methods=["POST"])
 def delete_activity_type_submit():
     conn = current_app.db
-    activity_id = request.form.get("id")
-    activity_name = request.form.get("name")
+    log_id = request.form.get("log_id")
+    unit_id = request.form.get("unit_id")
+    display_quantity = request.form.get("display_quantity")
     delete_activity_type(conn, activity_id)
 
     return render_template("activity_logs/delete_result.html",

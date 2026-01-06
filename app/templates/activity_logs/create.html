@@ -2,7 +2,6 @@
 
 <h2>Create Activity Log</h2>
 
-
 <form method="POST">
   <label>Activity Type:</label>
   <select
@@ -11,7 +10,7 @@
     hx-get="/activity_logs/create/units"
     hx-target="#units-dropdown"
     hx-trigger="change"
-    hx-vals='{"activity_type_id": this.value}'
+    hx-include="[name=activity_type_id]"
   >
     <option value="">-- Select Activity Type --</option>
     {% for act in activity_types %}
