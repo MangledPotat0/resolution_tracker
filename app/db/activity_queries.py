@@ -197,7 +197,7 @@ def get_activity_log(conn: connection, display_unit_id: int, log_id: str) \
         return row
 
 def insert_activity_log(conn: connection, activity_type_id: int,
-        quantity: float, unit_group_id: int) -> int:
+        quantity: float, unit_id: int) -> int:
     """
     Insert a new activity type record to the database.
 
@@ -206,7 +206,7 @@ def insert_activity_log(conn: connection, activity_type_id: int,
         activity_type_id (int): The id of the activity being logged.
         quantity (int): The amount of activity performed, measured in user
                 specified unit.
-        unit_group_id (int): The id of the unit for the quantity entered.
+        unit_id (int): The id of the unit for the quantity entered.
 
     Returns:
         int: ID of the newly created record.
@@ -215,14 +215,14 @@ def insert_activity_log(conn: connection, activity_type_id: int,
     with conn.cursor() as cur:
         cur.execute(
             INSERT_ACTIVITY_LOG,
-            (activity_type_id, quantity, unit_group_id)
+            (activity_type_id, quantity, unit_id)
         )
         log_id = cur.fetchone()["id"]
     conn.commit()
     return log_id
 
 def update_activity_log(conn: connection, log_id: int, activity_type_id: int,
-        quantity: float, unit_group_id: int) -> None:
+        quantity: float, unit_id: int) -> None:
     """
     Updates an existing activity_log record with new attribute values.
 
@@ -232,11 +232,12 @@ def update_activity_log(conn: connection, log_id: int, activity_type_id: int,
         activity_type_id (int): The id of the activity_type for the activity
             being logged.
         quantity (int): The new quantity of activity being logged.
+        unit_id (int): The id of the unit for the quantity entered.
     """
     with conn.cursor() as cur:
         cur.execute(
             UPDATE_ACTIVITY_LOG,
-            (activity_type_id, quantity, unit_group_id, log_id,)
+            (activity_type_id, quantity, unit_id, log_id,)
         )
     conn.commit()
 
