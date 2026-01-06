@@ -1,0 +1,27 @@
+services:
+  resolution_tracker:
+    image: resolutionpy
+    container_name: resolution_tracker
+    env_file:
+      - .env
+    command: "python run.py"
+    restart: unless-stopped
+    networks:
+      - pg-network
+    ports:
+      - 5001:5001
+  resolution_db:
+    image: postgres:latest 
+    container_name: resolution_db
+    volumes:
+      - resolution_db_volume:/var/lib/postgresql
+    env_file:
+      - .env
+    networks:
+      - pg-network
+volumes:
+  resolution_db_volume:
+    external: true
+networks:
+  pg-network:
+    external: true
