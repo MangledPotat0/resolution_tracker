@@ -61,7 +61,7 @@ def units_dropdown():
             units=allowed_units,
     )
 
-@activity_logs_bp.route("/update/activity_logs")
+@activity_logs_bp.route("/activity_logs")
 def activity_logs_dropdown():
     conn = current_app.db
     activity_type_id = request.args.get("activity_type_id")
@@ -167,7 +167,6 @@ def get_activity_update_form():
     ugroup_id = get_activity_type(conn, activity_type_id)["unit_group_id"]
     units = get_all_units_by_group(conn, ugroup_id)
     canonical_unit_id = get_unit_group(conn, ugroup_id)["canonical_unit_id"]
-    conn = current_app.db
     activity = get_activity_log(conn, canonical_unit_id, activity_id)
 
     return render_template(
@@ -191,27 +190,34 @@ def update_activity_log_submit():
 
 @activity_logs_bp.route("/delete_start", methods=["GET"])
 def delete_activity_log_start():
-    return manipulate_activity_log_start("delete")
-
-@activity_logs_bp.route("/delete/get_activity_type_form")
-def get_activity_delete_form():
-    activity_id = request.args.get("id")
     conn = current_app.db
-    activity = get_activity_type(conn, activity_id)
+    activity_types = get_all_activity_types(conn)
+    return render_template(
+            "activity_logs/delete.html",
+            activity_types=activity_types,
+    )
+
+@activity_logs_bp.route("/delete_form")
+def get_activity_delete_form():
+    conn = current_app.db
+    activity_id = request.args.get("id")
+    activity_type_id = request.args.get("activity_type_id")
+    ugroup_id = get_activity_type(conn, activity_type_id)["unit_group_id"]
+    units = get_all_units_by_group(conn, ugroup_id)
+    canonical_unit_id = get_unit_group(conn, ugroup_id)["canonical_unit_id"]
+    activity = get_activity_log(conn, canonical_unit_id, activity_id)
 
     return render_template(
-            "activity_logs/partials/activity_type_delete_form.html",
+            "activity_logs/partials/activity_log_delete_form.html",
             act=activity)
 
 @activity_logs_bp.route("/delete/submit", methods=["POST"])
-def delete_activity_type_submit():
+def delete_activity_log_submit():
     conn = current_app.db
     log_id = request.form.get("log_id")
-    unit_id = request.form.get("unit_id")
-    display_quantity = request.form.get("display_quantity")
-    delete_activity_type(conn, activity_id)
+    delete_activity_log(conn, log_id)
 
     return render_template("activity_logs/delete_result.html",
-                           name=activity_name)
+                           log_id=log_id)
 
 # EOF

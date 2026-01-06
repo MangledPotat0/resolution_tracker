@@ -1,0 +1,21 @@
+<h3>Delete Activity Log</h3>
+
+{% if act %}
+<p>Are you sure you want to delete this activity log?</p>
+
+<ul>
+  <li>Activity Log ID: {{ act.id }}</li>
+  <li>Activity Type ID: {{ act.activity_type_id }}</li>
+  <li>Quantity: {{ act.display_quantity }} {{ act.display_unit_name }}</li>
+</ul>
+
+<form method="POST" action="/activity_logs/delete/submit">
+  <input type="hidden" name="log_id" value="{{ act.id }}">
+  <button type="submit" style="background-color: red; color= white;">
+    Delete
+  </button>
+</form>
+
+{% else %}
+<p style="color: red;">Invalid activity type selected.</p>
+{% endif %}

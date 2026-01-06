@@ -1,0 +1,32 @@
+<script src="https://unpkg.com/htmx.org"></script>
+
+<h2>Delete Activity Log</h2>
+
+<input type="hidden" name="hx_get_url" value="/activity_logs/delete_form">
+<input type="hidden" name="hx_target" value="#activity-log-delete-form">
+
+<label>Activity Type:</label>
+<select
+  id="activity-type-select"
+  name="activity_type_id"
+  hx-get="/activity_logs/activity_logs"
+  hx-target="#activity-logs-dropdown"
+  hx-trigger="change"
+  hx-include="[name=activity_type_id], [name=hx_get_url], [name=hx_target]"
+>
+  <option value="">-- Select Activity Type --</option>
+  {% for act in activity_types %}
+    <option value="{{ act.id }}">{{ act.name }}</option>
+  {% endfor %}
+</select>
+
+<div id="activity-logs-dropdown">
+  {% set activity_logs = [] %}
+  {% include "activity_logs/partials/activity_logs_dropdown.html" %}
+</div>
+
+<div id="activity-log-delete-form">
+  {% include "activity_logs/partials/activity_log_delete_form.html" %}
+</div>
+
+<a href="/menu?table=activity_logs">Back to Activity Logs Menu</a>

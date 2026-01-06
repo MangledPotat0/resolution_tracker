@@ -1,0 +1,9 @@
+<h2>Activity Log Deleted Successfully</h2>
+
+{% if error %}
+  <p style:"color: red;">{{ error }}</p>
+  <a href="/activity_logs/delete_start">Return</a>
+{% else %}
+  <p>Activity Log # <strong>{{ log_id }}</strong> has been deleted.</p>
+  <a href="/menu?table=activity_logs">Back to Activity Logs Menu</a>
+{% endif %}
