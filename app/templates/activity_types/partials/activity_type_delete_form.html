@@ -1,0 +1,23 @@
+<h3>Delete Activity Type</h3>
+
+{% if act %}
+<p>Are you sure you want to delete this activity type?</p>
+
+<ul>
+  <li>Activity ID: {{ act.id }}</li>
+  <li>Name: {{ act.name }}</li>
+  <li>Unit Group ID: {{ act.unit_group_id }}</li>
+  <li>Goal Quantity: {{ act.goal_quantity }}</li>
+</ul>
+
+<form method="POST" action="/activity_types/delete/submit">
+  <input type="hidden" name="id" value="{{ act.id }}">
+  <input type="hidden" name="name" value="{{ act.name }}">
+  <button type="submit" style="background-color: red; color= white;">
+    Delete
+  </button>
+</form>
+
+{% else %}
+<p style="color: red;">Invalid activity type selected.</p>
+{% endif %}
