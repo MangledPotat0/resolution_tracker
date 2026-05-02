@@ -5,9 +5,10 @@ database and render data of user's choice as table (and in the future as
 plots).
 
 I built this because I wanted an easy way to log and view my progress towards
-my New Year's resolutions in 2026.
+my New Year's resolutions in 2026. You can see my data rendered as a dashboard
+[here](https://maelstrom.works/plots.html).
 
-# How do use this:
+# How to use this:
 1. Clone this repository and run `docker build -t resolutionpy .` to build
    the docker container.
 2. Edit the `dotenv_template` to fill in the env variables and save it as
